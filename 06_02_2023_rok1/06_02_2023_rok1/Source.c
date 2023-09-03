@@ -16,14 +16,15 @@ typedef struct _student {
 	StudentP next;
 } Student;
 
-// OCJENA 2
+//2
 StudentP InitializeStud();
 int ReadFile(StudentP head, char* file, int whichList);
 StudentP CreateStud(char* firstName, char* lastName, int grade, int whichList);
 int AddToFront(StudentP head, StudentP new);
 int PrintList(StudentP head);
 int DeleteList(StudentP head);
-
+StudentP Merge(StudentP head, StudentP toMerge, int whichList);
+StudentP FindStud(StudentP head, char* firstName, char* lastName);
 
 
 
@@ -32,10 +33,12 @@ int main() {
 	StudentP head1 = NULL;
 	StudentP head2 = NULL;
 	StudentP head3 = NULL;
+	StudentP headMerge = NULL;
 
 	head1 = InitializeStud();
 	head2 = InitializeStud();
 	head3 = InitializeStud();
+	headMerge = InitializeStud();
 
 	char f1[MAX_NAME] = "subject1.txt";
 	char f2[MAX_NAME] = "subject2.txt";
@@ -52,10 +55,16 @@ int main() {
 	printf("LIST 3\n");
 	PrintList(head3);
 
+	Merge(headMerge, head1, 1);
+	Merge(headMerge, head2, 2);
+	Merge(headMerge, head3, 3);
+	printf("MERGED LIST\n");
+	PrintList(headMerge);
+
 	DeleteList(head1);
 	DeleteList(head2);
 	DeleteList(head3);
-
+	DeleteList(headMerge);
 
 
 
@@ -65,6 +74,8 @@ int main() {
 		printf("List 2 deleted!\n");
 	if (NULL == head3->next)
 		printf("List 3 deleted!\n");
+	if (NULL == headMerge->next)
+		printf("List merged deleted!\n");
 
 	return EXIT_SUCCESS;
 }
@@ -101,7 +112,7 @@ int ReadFile(StudentP head, char* file, int whichList) {
 
 	while (!feof(fp)) {
 		fscanf(fp, "%s %s %d", lastName, firstName, &grade);
-		new = InitializeStud();
+		//new = InitializeStud();
 		new = CreateStud(firstName, lastName, grade, whichList);
 		AddToFront(head, new);
 	}
@@ -160,4 +171,64 @@ int DeleteList(StudentP head) {
 	}
 
 	return EXIT_SUCCESS;
+}
+
+StudentP Merge(StudentP head, StudentP toMerge, int whichList) {
+	StudentP p = NULL;
+	StudentP findStud = NULL;
+
+	for (p = toMerge->next; NULL != p; p = p->next) {
+
+		if (whichList == 1) {
+			if (p->subject1 > 1) {
+				findStud = CreateStud(p->firstName, p->lastName, p->subject1, 1);
+				AddToFront(head, findStud);
+			}
+		}
+
+		else if (whichList == 2) {
+			if (p->subject2 > 1) {
+				findStud = FindStud(head, p->firstName, p->lastName);
+
+				if (NULL != findStud)
+					findStud->subject2 = p->subject2;
+
+				else {
+					findStud = CreateStud(p->firstName, p->lastName, p->subject2, 2);
+					AddToFront(head, findStud);
+				}
+			}
+		}
+
+		else if (whichList == 3) {
+			if (p->subject3 > 1) {
+				findStud = FindStud(head, p->firstName, p->lastName);
+
+				if (NULL != findStud)
+					findStud->subject3 = p->subject3;
+
+				else {
+					findStud = CreateStud(p->firstName, p->lastName, p->subject3, 3);
+					AddToFront(head, findStud);
+				}
+			}
+		}
+
+
+	}
+
+	return head;
+
+}
+
+StudentP FindStud(StudentP head, char* firstName, char* lastName) {
+	StudentP p = head->next;
+	while (NULL != p) {
+		if (strcmp(p->lastName, lastName) == 0 && strcmp(p->firstName, firstName) == 0)
+			return p;
+
+		p = p->next;
+	}
+
+	return NULL;
 }
