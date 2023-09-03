@@ -1,0 +1,48 @@
+STRUKTURE PODATAKA (120) - 1. ispitni rok - 06.02.2023.
+
+Napisati program koji za tri razlicita predmeta iz datoteke cita 
+podatke o studentima koji su polozili predmet i gradi tri vezane liste.
+Svaki predmet ima svoju datoteku (subject1.txt,
+subject2.txt, subject 3.txt).
+Procitani podaci se spremaju u strukturu:
+
+
+struct _student;
+typedef struct _student *StudentP;
+typedef struct _student {
+	char firstName[MAX_NAME_LEN];
+	char lastName[MAX_NAME_LEN];
+	int subject1;
+	int subject2;
+	int subject3;
+	StudentP next;
+} Student;
+
+
+OCJENA 2:
+Iz tri gornje vezane liste napraviti novu na nacin da za svakog
+studenta postoji samo jedan element u listi, tj. ukoliko je
+student polozio vise predmeta treba grupirati njegove ocjene u
+jedan element liste. Ukoliko student nije polozio neki predmet,
+tada je njegova ocjena iz tog predmeta 1. Ispisati listu u 
+formatu:
+	- lastName firstName (subject1, subject2, subject3) 
+
+OCJENA 3:
+Izmijeniti kreiranje nove liste na nacin da se kreira sortirana
+lista i to po prosjeku svih predmeta, pa po prezimenima.
+Ispisati listu u formatu:
+	- lastName firstName (subject1, subject2, subject3) - prosjek
+
+OCJENA 4:
+Izbrisati iz liste sve osobe cije se ime unese s tastature.
+Ispisati listu.
+
+OCJENA 5:
+Izgenerirati slucajnu ocjenu (od 1 do 5) i sve osobe koje imaju
+bar jednu tu ocjenu pomaknuti na pocetak liste
+
+
+NAPOMENA: Za bilo koju ocjenu potrebno je pri zavrstku programa
+osloboditi svu dinamicki alociranu memoriju i zatvoriti sve 
+datoteke.
