@@ -13,6 +13,7 @@ typedef struct _student {
 	int subject1;
 	int subject2;
 	int subject3;
+	float avg;
 	StudentP next;
 } Student;
 
@@ -25,7 +26,12 @@ int PrintList(StudentP head);
 int DeleteList(StudentP head);
 StudentP Merge(StudentP head, StudentP toMerge, int whichList);
 StudentP FindStud(StudentP head, char* firstName, char* lastName);
-
+//3
+int Avg(StudentP stud);
+int InsertAfter(StudentP p, StudentP new);
+int InsertSorted(StudentP head, StudentP new);
+StudentP Merge2(StudentP head, StudentP toMerge, int whichList);
+int PrintList2(StudentP head);
 
 
 
@@ -34,11 +40,13 @@ int main() {
 	StudentP head2 = NULL;
 	StudentP head3 = NULL;
 	StudentP headMerge = NULL;
+	StudentP headMerge2 = NULL;
 
 	head1 = InitializeStud();
 	head2 = InitializeStud();
 	head3 = InitializeStud();
 	headMerge = InitializeStud();
+	headMerge2 = InitializeStud();
 
 	char f1[MAX_NAME] = "subject1.txt";
 	char f2[MAX_NAME] = "subject2.txt";
@@ -60,6 +68,15 @@ int main() {
 	Merge(headMerge, head3, 3);
 	printf("MERGED LIST\n");
 	PrintList(headMerge);
+
+	
+//
+	Merge2(headMerge2, head1, 1);
+	Merge2(headMerge2, head2, 2);
+	Merge2(headMerge2, head3, 3);
+	printf("****SORTED MERGED LIST\n");
+	PrintList2(headMerge2);
+
 
 	DeleteList(head1);
 	DeleteList(head2);
@@ -92,6 +109,7 @@ StudentP InitializeStud() {
 	new->subject1 = 1;
 	new->subject2 = 1;
 	new->subject3 = 1;
+	new->avg = 0;
 	new->next = NULL;
 
 	return new;
@@ -231,4 +249,103 @@ StudentP FindStud(StudentP head, char* firstName, char* lastName) {
 	}
 
 	return NULL;
+}
+
+//---
+
+int Avg(StudentP p) {
+	float avg = 0;
+	
+	avg = 1. * (p->subject1 + p->subject2 + p->subject3) / 3;
+	p->avg = avg;
+
+	return EXIT_SUCCESS;
+}
+
+int InsertAfter(StudentP p, StudentP new) {
+	StudentP t = p;
+	new->next = p->next;
+	p->next = new;
+
+	return EXIT_SUCCESS;
+}
+
+int InsertSorted(StudentP head, StudentP new) {
+	StudentP p = head->next;
+	Avg(new);
+
+
+	if (NULL == head->next)
+		AddToFront(head, new);
+
+	else {
+		while (NULL != p) {
+
+			if ((new->avg > p->avg) || ((new->avg == p->avg) && (strcmp(new->lastName, p->lastName) < 0)))
+				AddToFront(head, new);
+			else if(new->avg < p->avg && new->avg > p->next->avg)
+				InsertAfter(p, new);
+			else 
+				p = p->next;
+		}
+
+	}
+
+	return EXIT_SUCCESS;
+}
+
+StudentP Merge2(StudentP head, StudentP toMerge, int whichList) {
+	StudentP p = NULL;
+	StudentP findStud = NULL;
+
+
+	for (p = toMerge->next; p != NULL; p = p->next) {
+
+		if (whichList == 1) {
+			if (p->subject1 > 1) {
+				findStud = CreateStud(p->firstName, p->lastName, p->subject1, 1);
+				InsertSorted(head, findStud);
+			}
+		}
+
+		else if (whichList == 2) {
+			if (p->subject2 > 1) {
+				findStud = FindStud(head, p->firstName, p->lastName);
+
+				if (NULL != findStud)
+					findStud->subject2 = p->subject2;
+				else {
+					findStud = CreateStud(p->firstName, p->lastName, p->subject2, 2);
+					InsertSorted(head, findStud);
+				}
+			}
+		}
+
+		else if (whichList == 3) {
+			if (p->subject3 > 1) {
+				findStud = FindStud(head, p->firstName, p->lastName);
+
+				if (NULL != findStud)
+					findStud->subject3 = p->subject3;
+				else {
+					findStud = CreateStud(p->firstName, p->lastName, p->subject3, 3);
+					InsertSorted(head, findStud);
+				}
+			}
+		}
+	}
+
+	printf("\nxxxxxx\n");
+	return head;
+}
+
+int PrintList2(StudentP head) {
+	StudentP t = head->next;
+	while (NULL != t) {
+		printf(" %s %s (%d, %d, %d) - %lf\n", t->lastName, t->firstName, t->subject1, t->subject2, t->subject3, t->avg);
+		t = t->next;
+	}
+	printf("\n\n");
+
+	return EXIT_SUCCESS;
 }
